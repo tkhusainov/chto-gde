@@ -24,9 +24,63 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>ЧТОГДЕКУДА</title>
+		<style type="text/css">
+
+      #garland {position: fixed; top: 0; left: 0; background-image: url("https://www.expertplus.ru/UserFiles/Image/content/new_year/04_1.png"); height: 36px; width: 100%; overflow: hidden; z-index: 99;}
+
+      #nums_1 {padding: 100px;}
+
+      .garland_1 {background-position: 0 0;}
+
+      .garland_2 {background-position: 0 -36px;}
+
+      .garland_3 {background-position: 0 -72px;}
+
+      .garland_4 {background-position: 0 -108px;}
+
+      .garland_image{position: fixed; top: 0; left: 0;}
+
+      .garland_image img{border: 0;}
+
+  </style>
+
+  
+
+  <script>
+    function garland(numElem, elem) {
+        const nums = numElem.innerHTML;
+
+        if(nums == 1){elem.className='garland_1';numElem.innerHTML='2'};
+        if(nums == 2){elem.className='garland_2';numElem.innerHTML='3'};
+        if(nums == 3){elem.className='garland_3';numElem.innerHTML='4'};
+        if(nums == 4){elem.className='garland_4';numElem.innerHTML='1'};
+    }
+
+    setTimeout(() => {
+      const numElem = document.getElementById('nums_1');
+      const nums = numElem.innerHTML;
+      const elem = document.getElementById('garland');
+
+      // <!-- UNKOMMENT -->
+      setInterval(function(){
+        garland(numElem, elem);
+      }, 600);
+    }, 1000);
+      
+      
+  </script>
+
+  <script src="https://www.expertplus.ru/UserFiles/Image/content/new_year/07.js"></script>
   </head>
   <body>
+    <!-- Гирлянда -->
+    <div id="garland">
+      <div id="nums_1">1</div>
+    </div>
+    <div class="garland_image">
+      <img src="https://www.expertplus.ru/UserFiles/Image/content/new_year/07.png">
+    </div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
@@ -39,5 +93,21 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <!-- UNKOMMENT -->
+    <!-- <script src="/snowstorm-min.js"></script>
+
+    <script>
+
+        window.onload = function() {
+
+            snowStorm.snowColor = "#fff"; // Цвет снежинок
+            snowStorm.flakesMaxActive = 50; // Максимальное количество видимых снежинок
+            snowStorm.followMouse = false; // true - гоняться за курсором, false - нет
+            snowStorm.snowCharacter = "&bull;"; // Вид снежинки
+
+        };
+
+    </script> -->
   </body>
 </html>
