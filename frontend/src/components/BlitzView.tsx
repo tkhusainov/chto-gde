@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Question } from "../types/Question";
+import { Question } from "../types";
 import { BlitzSubView } from "./BlitzSubView";
 
 type Props = {

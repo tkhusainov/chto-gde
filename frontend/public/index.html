@@ -48,66 +48,54 @@
   
 
   <script>
-    function garland(numElem, elem) {
-        const nums = numElem.innerHTML;
+    window._decorations = '%REACT_APP_DECORATIONS%' !== 'false';
 
+    if (window._decorations) {
+      function garland(numElem, elem) {
+        const nums = numElem.innerHTML;
         if(nums == 1){elem.className='garland_1';numElem.innerHTML='2'};
         if(nums == 2){elem.className='garland_2';numElem.innerHTML='3'};
         if(nums == 3){elem.className='garland_3';numElem.innerHTML='4'};
         if(nums == 4){elem.className='garland_4';numElem.innerHTML='1'};
+      }
+
+      setTimeout(() => {
+        const numElem = document.getElementById('nums_1');
+        const elem = document.getElementById('garland');
+        setInterval(function(){ garland(numElem, elem); }, 600);
+      }, 1000);
+
+      var _s = document.createElement('script');
+      _s.src = 'https://www.expertplus.ru/UserFiles/Image/content/new_year/07.js';
+      document.head.appendChild(_s);
     }
-
-    setTimeout(() => {
-      const numElem = document.getElementById('nums_1');
-      const nums = numElem.innerHTML;
-      const elem = document.getElementById('garland');
-
-      // <!-- UNKOMMENT -->
-      setInterval(function(){
-        garland(numElem, elem);
-      }, 600);
-    }, 1000);
-      
-      
   </script>
-
-  <script src="https://www.expertplus.ru/UserFiles/Image/content/new_year/07.js"></script>
   </head>
   <body>
     <!-- Гирлянда -->
-    <div id="garland">
+    <div id="garland" style="display:none">
       <div id="nums_1">1</div>
     </div>
-    <div class="garland_image">
+    <div class="garland_image" style="display:none">
       <img src="https://www.expertplus.ru/UserFiles/Image/content/new_year/07.png">
     </div>
+    <script>
+      if (window._decorations) {
+        document.getElementById('garland').style.display = '';
+        document.querySelector('.garland_image').style.display = '';
+
+        var _snow = document.createElement('script');
+        _snow.src = '/snowstorm-min.js';
+        _snow.onload = function() {
+          snowStorm.snowColor = "#fff";
+          snowStorm.flakesMaxActive = 50;
+          snowStorm.followMouse = false;
+          snowStorm.snowCharacter = "\u2022";
+        };
+        document.body.appendChild(_snow);
+      }
+    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-
-    <!-- UNKOMMENT -->
-    <!-- <script src="/snowstorm-min.js"></script>
-
-    <script>
-
-        window.onload = function() {
-
-            snowStorm.snowColor = "#fff"; // Цвет снежинок
-            snowStorm.flakesMaxActive = 50; // Максимальное количество видимых снежинок
-            snowStorm.followMouse = false; // true - гоняться за курсором, false - нет
-            snowStorm.snowCharacter = "&bull;"; // Вид снежинки
-
-        };
-
-    </script> -->
   </body>
 </html>

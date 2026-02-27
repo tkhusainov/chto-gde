@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Question } from "../types/Question";
+import { Question } from "../types";
 import { Wheel } from "./Wheel";
 import { SelectedQuestion } from "./SelectedQuestion";
 import { without, xor } from "lodash";

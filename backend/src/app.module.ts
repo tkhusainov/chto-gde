@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import configuration from './config/configuration';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { QuestionsModule } from './questions/questions.module';
-import { GamesModule } from './games/games.module';
+import { UsersModule } from './users';
+import { AuthModule } from './auth';
+import { QuestionsModule } from './questions';
+import { GamesModule } from './games';
+import { SeedModule } from './seed';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GamesModule } from './games/games.module';
     AuthModule,
     QuestionsModule,
     GamesModule,
+    SeedModule,
   ],
 })
 export class AppModule {}

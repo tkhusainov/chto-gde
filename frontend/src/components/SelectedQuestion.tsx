@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Sound from 'react-sound';
-import { Question, QuestionType } from "../types/Question";
+import { Question } from "../types";
 import { Answer } from "./Answer";
 import { QuestionView } from "./QuestionView";
 

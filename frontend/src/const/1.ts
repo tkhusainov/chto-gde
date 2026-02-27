@@ -1,4 +1,5 @@
-import { Question, QuestionType } from "../types/Question";
+import { QuestionType } from "../enums";
+import { Question } from "../types";
 
 const path = 'questions/1'
 

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { QuestionType } from '../enums/question-type.enum';
 
 export type QuestionDocument = HydratedDocument<Question>;
 
@@ -8,8 +9,8 @@ export class Question {
   @Prop({ required: true })
   id: string;
 
-  @Prop({ required: true, enum: ['text', 'image', 'video', 'black-box', 'blitz'] })
-  type: string;
+  @Prop({ required: true, enum: QuestionType })
+  type: QuestionType;
 
   @Prop({ type: Types.ObjectId, ref: 'Game', index: true })
   gameId?: Types.ObjectId;

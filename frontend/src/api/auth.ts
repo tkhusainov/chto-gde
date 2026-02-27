@@ -1,17 +1,14 @@
-const BASE_URL = 'http://localhost:3001';
+import { BASE_URL } from './config';
+import { AuthUser } from '../types';
 
-export interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+export type { AuthUser };
+export { UserRole } from '../enums';
 
-export async function apiRegister(email: string, password: string): Promise<AuthUser> {
+export async function apiRegister(name: string, email: string, password: string): Promise<AuthUser> {
   const res = await fetch(`${BASE_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: email, email, password }),
+    body: JSON.stringify({ name, email, password }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Ошибка регистрации');

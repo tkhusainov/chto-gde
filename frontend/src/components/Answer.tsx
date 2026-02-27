@@ -1,5 +1,6 @@
 import React from "react";
-import { QuestionAnswer, QuestionType } from "../types/Question";
+import { QuestionType } from "../enums";
+import { QuestionAnswer } from "../types";
 
 type Props = {
     answer: QuestionAnswer;

@@ -7,6 +7,7 @@ interface Props {
 }
 
 export function RegisterForm({ onRegistered, onGoLogin }: Props) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,7 +29,7 @@ export function RegisterForm({ onRegistered, onGoLogin }: Props) {
 
     setLoading(true);
     try {
-      await apiRegister(email, password);
+      await apiRegister(name, email, password);
       onRegistered();
     } catch (err: any) {
       setError(err.message);
@@ -42,13 +43,22 @@ export function RegisterForm({ onRegistered, onGoLogin }: Props) {
       <h2 className="auth-title">Регистрация</h2>
       <form onSubmit={handleSubmit} className="auth-form">
         <div className="auth-field">
+          <label>Имя</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+            autoFocus
+          />
+        </div>
+        <div className="auth-field">
           <label>Email</label>
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            autoFocus
           />
         </div>
         <div className="auth-field">

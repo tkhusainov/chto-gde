@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Question } from "../types/Question";
+import { Question } from "../types";
 import Sound from 'react-sound';
 import { Answer } from "./Answer";
 

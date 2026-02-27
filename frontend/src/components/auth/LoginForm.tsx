@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { apiLogin, saveSession, AuthUser } from '../../api/auth';
+import { apiLogin, saveSession } from '../../api/auth';
+import { AuthUser } from '../../types';
 
 interface Props {
   onLogin: (user: AuthUser) => void;

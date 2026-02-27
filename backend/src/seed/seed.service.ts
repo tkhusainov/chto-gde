@@ -1,8 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Game, GameDocument } from '../games/schemas/game.schema';
-import { Question, QuestionDocument } from '../questions/schemas/question.schema';
+import { Game, GameDocument } from '../games';
+import { Question, QuestionDocument } from '../questions';
 import { games as gamesData } from './data/games.seed';
 import { questions as questions0 } from './data/questions-0.seed';
 import { questions as questions1 } from './data/questions-1.seed';
@@ -22,11 +22,13 @@ export class SeedService implements OnModuleInit {
   }
 
   async seed() {
-    this.logger.log('Seeding database...');
+    const count = await this.gameModel.countDocuments();
+    if (count > 0) {
+      this.logger.log('Database already seeded, skipping');
+      return;
+    }
 
-    await this.questionModel.deleteMany({});
-    await this.gameModel.deleteMany({});
-    this.logger.log('Cleared existing data');
+    this.logger.log('Seeding database...');
 
     const createdGames = await this.gameModel.insertMany(gamesData);
     const [game0, game1, game2] = createdGames;
