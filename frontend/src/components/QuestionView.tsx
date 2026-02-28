@@ -13,7 +13,7 @@ export const QuestionView: React.FC<Props> = ({question, onAnswer}) => {
         return (
             <div className="flex-center flex-column my-2">
                 <div className="text-padding text-break my-2">{question.description}</div>
-                <img src={question.srcPath} style={{maxWidth: '50%'}} alt="question_image" />
+                <img src={question.image} style={{maxWidth: '50%'}} alt="question_image" />
             </div>
         )
     }
@@ -23,7 +23,7 @@ export const QuestionView: React.FC<Props> = ({question, onAnswer}) => {
             <div className="flex-center flex-column my-2">
                 <div className="text-padding text-break my-2">{question.description}</div>
                 <video controls>
-                    <source src={question.srcPath} type="video/mp4" />
+                    <source src={question.image} type="video/mp4" />
                 </video>
             </div>
         )

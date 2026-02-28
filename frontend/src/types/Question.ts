@@ -1,15 +1,18 @@
-import { QuestionType } from '../enums';
+import { QuestionType, AnswerType } from '../enums';
 
 export type QuestionAnswer = {
-  type: QuestionType;
+  type: AnswerType;
   description?: string;
-  srcPath?: string;
+  image?: string;
+  video?: string;
 };
 
 export type Question = {
   id: string;
+  number: string;
   type: QuestionType;
-  srcPath?: string;
+  image?: string;
+  video?: string;
   header?: string;
   description?: string;
   answer?: QuestionAnswer;

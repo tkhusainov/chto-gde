@@ -1,5 +1,5 @@
 import React from "react";
-import { QuestionType } from "../enums";
+import { AnswerType } from "../enums";
 import { QuestionAnswer } from "../types";
 
 type Props = {
@@ -15,13 +15,13 @@ export const Answer: React.FC<Props> = ({answer, onClose}) => {
             </audio>
             <div>
                 <div className="text-padding text-bg text-break" >{answer.description}</div>
-                {answer.type === QuestionType.Video && answer.srcPath &&
+                {answer.type === AnswerType.Video && answer.image &&
                     <video controls className="question-image" >
-                        <source src={answer.srcPath} type="video/mp4" />
+                        <source src={answer.image} type="video/mp4" />
                     </video>
                 }
-                {answer.type === QuestionType.Image && answer.srcPath &&
-                    <img src={answer.srcPath} className="question-image" alt="question_image" />
+                {answer.type === AnswerType.Image && answer.image &&
+                    <img src={answer.image} className="question-image" alt="question_image" />
                 }
                 <button className="answer-btn" onClick={onClose}>{'Закрыть'}</button>
             </div>

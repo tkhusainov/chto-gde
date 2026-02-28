@@ -1,13 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { QuestionType } from '../enums/question-type.enum';
+import { AnswerType } from '../enums/answer-type.enum';
 
 export type QuestionDocument = HydratedDocument<Question>;
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (_, ret) => {
+      ret.id = ret._id?.toString();
+      delete ret._id;
+      delete ret.__v;
+      return ret;
+    },
+  },
+})
 export class Question {
   @Prop({ required: true })
-  id: string;
+  number: string;
 
   @Prop({ required: true, enum: QuestionType })
   type: QuestionType;
@@ -19,7 +31,10 @@ export class Question {
   userId?: Types.ObjectId;
 
   @Prop()
-  srcPath?: string;
+  image?: string;
+
+  @Prop()
+  video?: string;
 
   @Prop()
   header?: string;
@@ -29,9 +44,10 @@ export class Question {
 
   @Prop({ type: Object })
   answer?: {
-    type: string;
+    type: AnswerType;
     description?: string;
-    srcPath?: string;
+    image?: string;
+    video?: string;
   };
 
   @Prop({ type: Object })
@@ -44,16 +60,16 @@ export class Question {
   subQuestions?: Array<{
     id: string;
     type: string;
-    srcPath?: string;
+    photo?: string;
     header?: string;
     description?: string;
     answer?: {
-      type: string;
+      type: AnswerType;
       description?: string;
-      srcPath?: string;
+      photo?: string;
     };
   }>;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
-QuestionSchema.index({ id: 1, gameId: 1 }, { unique: true });
+QuestionSchema.index({ number: 1, gameId: 1 }, { unique: true });

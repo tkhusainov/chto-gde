@@ -224,6 +224,191 @@ body {
   margin-bottom: 10px;
 }
 
+/* Back button */
+.back-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.back-btn:hover {
+  color: white;
+}
+
+.auth-back-wrapper {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+}
+
+/* Home page */
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  color: white;
+}
+
+.home-title {
+  font-size: 52px;
+  font-weight: bold;
+  color: yellow;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin: 0;
+}
+
+.home-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.home-btn {
+  padding: 14px 40px;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.home-btn:active {
+  transform: scale(0.97);
+}
+
+.home-btn-play {
+  background-color: rgba(255, 165, 0, 0.15);
+  border: 2px solid orange;
+  color: orange;
+}
+
+.home-btn-play:hover {
+  background-color: rgba(255, 165, 0, 0.3);
+}
+
+.home-btn-login {
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.home-btn-login:hover {
+  border-color: white;
+  color: white;
+}
+
+/* Questions page */
+.questions-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.questions-header .page-title {
+  margin: 0;
+}
+
+.questions-back {
+  margin-bottom: 0;
+  margin-left: auto;
+  font-size: 15px;
+}
+
+.questions-add-btn {
+  margin-bottom: 20px;
+  padding: 7px 16px;
+  font-size: 14px;
+}
+
+.question-form-panel {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  max-width: 900px;
+}
+
+.question-form-title {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: yellow;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.question-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+}
+
+.question-form-full {
+  grid-column: 1 / -1;
+}
+
+.question-form-actions {
+  margin-top: 16px;
+}
+
+.question-number-readonly {
+  opacity: 0.5;
+  cursor: default;
+  width: 80px;
+}
+
+.question-textarea {
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.question-cell-truncate {
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.question-row-editing {
+  background-color: rgba(255, 255, 0, 0.04);
+}
+
+/* Play page */
+.play-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-code-input {
+  font-size: 28px;
+  letter-spacing: 8px;
+  text-align: center;
+}
+
+.play-success {
+  text-align: center;
+}
+
+.play-game-name {
+  font-size: 24px;
+  color: orange;
+  margin: 8px 0 0;
+}
+
 /* Auth forms */
 .auth-card {
   background-color: rgba(30, 32, 38, 0.95);
@@ -566,6 +751,7 @@ body {
   padding: 5px 10px;
   outline: none;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .users-input:focus {

@@ -1,6 +1,6 @@
 export const questions = [
   {
-    id: '1',
+    number: '1',
     type: 'text',
     header: 'Россия и шахматы',
     description: 'Что с Россией - черный шахматный конь, а без России - черная пешка?',
@@ -14,7 +14,7 @@ export const questions = [
     },
   },
   {
-    id: '2',
+    number: '2',
     type: 'black-box',
     header: 'Татар кара әрҗәсе',
     description: 'В черном ящике находится отгадка на татарскую загадку: Слоистая, слоистая капуста, полная внутри муравьев',
@@ -28,7 +28,7 @@ export const questions = [
     },
   },
   {
-    id: '3',
+    number: '3',
     type: 'text',
     header: 'Олимпиада первоклассников',
     description: 'На олимпиаде в первом классе была интересная задачка. Продолжите последовательность чисел:\n\n 4, 3, 3, 6, 4, 5, ?, ?, ?',
@@ -42,7 +42,7 @@ export const questions = [
     },
   },
   {
-    id: '4',
+    number: '4',
     type: 'black-box',
     header: '5 + 5 = 4',
     description: 'Содержимое этих черных ящиков может наглядно продемонстрировать странное равенство: \n\n5 + 5 = 4. \nТо есть содержимое двух одинаковых ящиков равно содержимому большого. Что в черных ящиках, А?',
@@ -56,7 +56,7 @@ export const questions = [
     },
   },
   {
-    id: '5',
+    number: '5',
     type: 'text',
     header: 'Медведь и ворона',
     description: 'Загадка. \nМедведь позвал ворону в дом. Угощал грибами и шоколадом, поил вином. Всю ночь читал стихи, но на танец пригласить ее не мог. \nПочему?',
@@ -70,13 +70,13 @@ export const questions = [
     },
   },
   {
-    id: '6',
+    number: '6',
     type: 'text',
     header: 'Последовательность букв',
     description: 'Закончите последовательность букв:\n\n Т О П П Т В\n Ц Ц\nО Л В И Л Х П С\n? ? ? ? ? ? ? ?',
     answer: {
       type: 'image',
-      srcPath: 'questions/1/tsar.png',
+      image: 'questions/1/tsar.png',
       description: 'О П Н М В Т Н Р. \nЭто слова песни "Царица"',
     },
     author: {
@@ -85,9 +85,9 @@ export const questions = [
     },
   },
   {
-    id: '7',
+    number: '7',
     type: 'image',
-    srcPath: 'questions/1/krug.png',
+    image: 'questions/1/krug.png',
     header: 'Giga-chat AI',
     description: 'Как называется древний символ, представляющий собой круг с точкой посередине, который часто ассоциируется с солнцем и вечностью?',
     answer: {
@@ -100,13 +100,13 @@ export const questions = [
     },
   },
   {
-    id: '8',
+    number: '8',
     type: 'text',
     header: 'Загадка про мост',
     description: 'Загадка\n Вот кочерга лежит возле моста, на берегу другом сорвало с дома крышу. \nДля вас загадка, думаю, проста, что под мостом? Через минуту я услышу?\n\nЧто под мостом?',
     answer: {
       type: 'image',
-      srcPath: 'questions/1/koren.png',
+      image: 'questions/1/koren.png',
       description: 'Корень слова. Кочерга - приставка, крыша - суффикс',
     },
     author: {
@@ -115,7 +115,7 @@ export const questions = [
     },
   },
   {
-    id: '9',
+    number: '9',
     type: 'text',
     header: 'Бытие мое',
     description: 'Бытие. Глава 2 стих 21.\n\n И навел господь на человека крепкий сон \nи когда он уснул \nвзял одно из ребер его \nи закрыл то место плотью.\n\nЭти строки из библии в 1847 году Джеймс Янг Симпсон использовал как аргумент в защиту. \nВ защиту чего выступал этот шотландец?',
@@ -129,13 +129,13 @@ export const questions = [
     },
   },
   {
-    id: '10',
+    number: '10',
     type: 'text',
     header: 'Большой прямоугольник',
     description: 'Власть, религия, торговля, история находятся по четырем сторонам этого прмоугольника площадью 23 000 квадратных метров.\nНазовите его',
     answer: {
       type: 'image',
-      srcPath: 'questions/1/ploschad.png',
+      image: 'questions/1/ploschad.png',
       description: 'Красная площадь. \nКремль, Собор Василия Блаженного, ГУМ, Историчекий музей',
     },
     author: {
@@ -144,13 +144,13 @@ export const questions = [
     },
   },
   {
-    id: '11',
+    number: '11',
     type: 'text',
     header: 'Памятники стоить мы не бросим...',
     description: 'Какому событию посвящен памятник высотой 141,8 метра?',
     answer: {
       type: 'image',
-      srcPath: 'questions/1/monument-pobedy.jpg',
+      image: 'questions/1/monument-pobedy.jpg',
       description: 'Великая отечественная война. \nДлительность 1418 дней. Монумент Победы по Поклонной горе',
     },
     author: {
@@ -159,7 +159,7 @@ export const questions = [
     },
   },
   {
-    id: '12',
+    number: '12',
     type: 'text',
     header: 'Старинная притча',
     description: 'Однажды халифа Умара навестил его друг Абдурахман. Навестил его в тот момент, когда верховный правитель занимался государственными делами. Увидев своего друга, халиф Умар погасил одну свечу и зажег другую. Поведение халифа удивило Абдурахмана. Он воскликнул: "О, глава мусульман, почему ты погасил одну свечу и зажег другую?"\n Каким был ответ халифа Умара?',
@@ -173,17 +173,17 @@ export const questions = [
     },
   },
   {
-    id: '13',
+    number: '13',
     type: 'video',
     header: 'Январские праздники',
-    srcPath: 'questions/1/nail_q.MOV',
+    image: 'questions/1/nail_q.MOV',
     author: {
       name: 'Наиль Волк, бизнесмен, Москва-сити',
       photo: 'questions/1/authors/nail_author.jpg',
     },
     answer: {
       type: 'video',
-      srcPath: 'questions/1/nail_a.MOV',
+      image: 'questions/1/nail_a.MOV',
     },
   },
 ];

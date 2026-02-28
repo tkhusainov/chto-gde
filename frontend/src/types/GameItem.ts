@@ -1,4 +1,6 @@
 export interface GameItem {
-  _id: string;
+  id: string;
   name: string;
+  code: string;
+  pin: string;
 }

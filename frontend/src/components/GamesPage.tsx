@@ -26,7 +26,7 @@ export function GamesPage() {
   }, [token]);
 
   function startEdit(game: GameItem) {
-    setEditingId(game._id);
+    setEditingId(game.id);
     setEditName(game.name);
   }
 
@@ -38,7 +38,7 @@ export function GamesPage() {
     setSaving(true);
     try {
       const updated = await apiUpdateGame(token, id, editName);
-      setGames(prev => prev.map(g => (g._id === id ? updated : g)));
+      setGames(prev => prev.map(g => (g.id === id ? updated : g)));
       setEditingId(null);
     } catch (e: any) {
       setError(e.message);
@@ -52,7 +52,7 @@ export function GamesPage() {
     setDeletingId(id);
     try {
       await apiDeleteGame(token, id);
-      setGames(prev => prev.filter(g => g._id !== id));
+      setGames(prev => prev.filter(g => g.id !== id));
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -104,13 +104,15 @@ export function GamesPage() {
           <thead>
             <tr>
               <th>Название</th>
+              <th>Code</th>
+              <th>Pin</th>
               <th>Действия</th>
             </tr>
           </thead>
           <tbody>
             {games.map(game => (
-              <tr key={game._id}>
-                {editingId === game._id ? (
+              <tr key={game.id}>
+                {editingId === game.id ? (
                   <>
                     <td>
                       <input
@@ -119,10 +121,12 @@ export function GamesPage() {
                         onChange={e => setEditName(e.target.value)}
                       />
                     </td>
+                    <td>{game.code}</td>
+                    <td>{game.pin}</td>
                     <td className="users-actions">
                       <button
                         className="users-btn users-btn-save"
-                        onClick={() => saveEdit(game._id)}
+                        onClick={() => saveEdit(game.id)}
                         disabled={saving}
                       >
                         Сохранить
@@ -135,12 +139,20 @@ export function GamesPage() {
                 ) : (
                   <>
                     <td>{game.name}</td>
+                    <td>{game.code}</td>
+                    <td>{game.pin}</td>
                     <td className="users-actions">
                       <button
                         className="users-btn users-btn-launch"
-                        onClick={() => navigate(`/games/${game._id}`)}
+                        onClick={() => navigate(`/games/${game.id}`)}
                       >
                         Запустить
+                      </button>
+                      <button
+                        className="users-btn users-btn-edit"
+                        onClick={() => navigate(`/games/${game.id}/questions`)}
+                      >
+                        Вопросы
                       </button>
                       <button
                         className="users-btn users-btn-edit"
@@ -150,8 +162,8 @@ export function GamesPage() {
                       </button>
                       <button
                         className="users-btn users-btn-delete"
-                        onClick={() => deleteGame(game._id)}
-                        disabled={deletingId === game._id}
+                        onClick={() => deleteGame(game.id)}
+                        disabled={deletingId === game.id}
                       >
                         Удалить
                       </button>
@@ -162,7 +174,7 @@ export function GamesPage() {
             ))}
             {games.length === 0 && (
               <tr>
-                <td colSpan={2} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
+                <td colSpan={4} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
                   Игры не найдены
                 </td>
               </tr>

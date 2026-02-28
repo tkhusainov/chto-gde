@@ -33,6 +33,17 @@ export async function apiUpdateGame(token: string, id: string, name: string): Pr
   return data;
 }
 
+export async function apiJoinGame(code: string, pin: string): Promise<{ id: string; name: string; code: string }> {
+  const res = await fetch(`${BASE_URL}/games/join`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, pin }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Ошибка входа в игру');
+  return data;
+}
+
 export async function apiDeleteGame(token: string, id: string): Promise<void> {
   const res = await fetch(`${BASE_URL}/games/${id}`, {
     method: 'DELETE',
