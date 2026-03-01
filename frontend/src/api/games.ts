@@ -2,6 +2,15 @@ import { GameItem } from '../types';
 
 import { BASE_URL } from './config';
 
+export async function apiGetGame(token: string, id: string): Promise<GameItem> {
+  const res = await fetch(`${BASE_URL}/games/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Ошибка загрузки игры');
+  return data;
+}
+
 export async function apiGetGames(token: string): Promise<GameItem[]> {
   const res = await fetch(`${BASE_URL}/games`, {
     headers: { Authorization: `Bearer ${token}` },

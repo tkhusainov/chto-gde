@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { loadSession } from '../api/auth';
 import { apiGetQuestions, apiCreateQuestion, apiDeleteQuestion } from '../api/questions';
+import { apiGetGame } from '../api/games';
 import { Question } from '../types';
 import { QuestionType } from '../enums';
 
@@ -34,6 +35,7 @@ export function QuestionsPage() {
   const navigate = useNavigate();
   const token = loadSession()?.token ?? '';
 
+  const [gameName, setGameName] = useState<string>('');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +47,8 @@ export function QuestionsPage() {
 
   useEffect(() => {
     if (!gameId) return;
-    apiGetQuestions(token, gameId)
-      .then(setQuestions)
+    Promise.all([apiGetGame(token, gameId), apiGetQuestions(token, gameId)])
+      .then(([game, qs]) => { setGameName(game.name); setQuestions(qs); })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [gameId, token]);
@@ -93,7 +95,7 @@ export function QuestionsPage() {
   return (
     <div className="page-content">
       <div className="questions-header">
-        <h2 className="page-title">Вопросы</h2>
+        <h2 className="page-title">Вопросы{gameName ? ` — ${gameName}` : ''}</h2>
         <button className="back-btn questions-back" onClick={() => navigate('/games')}>← Назад</button>
       </div>
 

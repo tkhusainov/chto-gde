@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Query, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Query, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -19,20 +19,20 @@ export class QuestionsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() body: Record<string, any>) {
+  create(@Body() body: Record<string, any>, @Request() req: any) {
     const { gameId, ...data } = body;
-    return this.questionsService.create(gameId, data);
+    return this.questionsService.create(gameId, data, req.user._id.toString(), req.user.role);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: Record<string, any>) {
-    return this.questionsService.update(id, data);
+  update(@Param('id') id: string, @Body() data: Record<string, any>, @Request() req: any) {
+    return this.questionsService.update(id, data, req.user._id.toString(), req.user.role);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.questionsService.remove(id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.questionsService.remove(id, req.user._id.toString(), req.user.role);
   }
 }

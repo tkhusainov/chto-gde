@@ -3,4 +3,5 @@ export interface GameItem {
   name: string;
   code: string;
   pin: string;
+  userId?: string;
 }

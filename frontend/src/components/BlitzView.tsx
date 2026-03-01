@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
-import { Question } from "../types";
+import React from "react";
+import { Question, SubQuestion } from "../types";
 import { BlitzSubView } from "./BlitzSubView";
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 export const BlitzView: React.FC<Props> = ({question, onAnswer}) => {
     const [selectedSubQuestionIndex, setSelectedSubQuestionIndex] = useState(-1);
 
-    const selectedSubQuestion = useMemo(() => {
+    const selectedSubQuestion = useMemo<SubQuestion | undefined>(() => {
         return question.subQuestions?.[selectedSubQuestionIndex];
     }, [selectedSubQuestionIndex, question.subQuestions]);
 

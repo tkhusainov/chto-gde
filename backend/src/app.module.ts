@@ -6,7 +6,6 @@ import { UsersModule } from './users';
 import { AuthModule } from './auth';
 import { QuestionsModule } from './questions';
 import { GamesModule } from './games';
-import { SeedModule } from './seed';
 
 @Module({
   imports: [
@@ -24,7 +23,6 @@ import { SeedModule } from './seed';
     AuthModule,
     QuestionsModule,
     GamesModule,
-    SeedModule,
   ],
 })
 export class AppModule {}

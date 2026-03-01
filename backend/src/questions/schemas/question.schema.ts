@@ -18,9 +18,6 @@ export type QuestionDocument = HydratedDocument<Question>;
   },
 })
 export class Question {
-  @Prop({ required: true })
-  number: string;
-
   @Prop({ required: true, enum: QuestionType })
   type: QuestionType;
 
@@ -58,18 +55,18 @@ export class Question {
 
   @Prop({ type: [Object], default: undefined })
   subQuestions?: Array<{
-    id: string;
     type: string;
-    photo?: string;
+    image?: string;
+    video?: string;
     header?: string;
     description?: string;
     answer?: {
       type: AnswerType;
       description?: string;
-      photo?: string;
+      image?: string;
+      video?: string;
     };
   }>;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
-QuestionSchema.index({ number: 1, gameId: 1 }, { unique: true });

@@ -4,7 +4,7 @@ import { Wheel } from "./Wheel";
 import { SelectedQuestion } from "./SelectedQuestion";
 import { without, xor } from "lodash";
 
-const SPIN_DURATION = 25;// 25000;
+const SPIN_DURATION = process.env.REACT_APP_DEV_MODE === 'true' ? 25 : 25000;
 
 type Props = {
     questions: Question[];

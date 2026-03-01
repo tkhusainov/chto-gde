@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Game, GameDocument } from './schemas/game.schema';
+import { Question, QuestionDocument } from '../questions/schemas/question.schema';
+import { UserRole } from '../users/schemas/user.schema';
+import { MAX_GAMES_PER_USER } from '../config/constants';
 
 @Injectable()
 export class GamesService {
-  constructor(@InjectModel(Game.name) private gameModel: Model<GameDocument>) {}
+  constructor(
+    @InjectModel(Game.name) private gameModel: Model<GameDocument>,
+    @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
+  ) {}
 
   async findAll(): Promise<GameDocument[]> {
     return this.gameModel.find().exec();
@@ -24,16 +30,27 @@ export class GamesService {
     throw new Error('Failed to generate unique code');
   }
 
-  async create(name: string): Promise<GameDocument> {
+  async create(name: string, userId?: string): Promise<GameDocument> {
+    if (userId) {
+      const count = await this.gameModel.countDocuments({ userId: new Types.ObjectId(userId) });
+      if (count >= MAX_GAMES_PER_USER) {
+        throw new BadRequestException(`Максимум ${MAX_GAMES_PER_USER} игр на пользователя`);
+      }
+    }
     const code = await this.generateUniqueCode();
     const pin = this.rand4();
-    return new this.gameModel({ name, code, pin }).save();
+    const data: any = { name, code, pin };
+    if (userId) data.userId = new Types.ObjectId(userId);
+    return new this.gameModel(data).save();
   }
 
-  async update(id: string, name: string): Promise<GameDocument> {
-    const game = await this.gameModel.findByIdAndUpdate(id, { name }, { new: true }).exec();
+  async update(id: string, name: string, requestingUserId: string, requestingUserRole: UserRole): Promise<GameDocument> {
+    const game = await this.gameModel.findById(id).exec();
     if (!game) throw new NotFoundException('Game not found');
-    return game;
+    if (requestingUserRole !== UserRole.Admin && game.userId?.toString() !== requestingUserId) {
+      throw new ForbiddenException('Access denied');
+    }
+    return this.gameModel.findByIdAndUpdate(id, { name }, { new: true }).exec();
   }
 
   async findById(id: string): Promise<GameDocument> {
@@ -49,8 +66,21 @@ export class GamesService {
     return { id: String(game._id), name: game.name, code: game.code };
   }
 
-  async remove(id: string): Promise<void> {
-    const result = await this.gameModel.findByIdAndDelete(id).exec();
-    if (!result) throw new NotFoundException('Game not found');
+  async remove(id: string, requestingUserId: string, requestingUserRole: UserRole): Promise<void> {
+    const game = await this.gameModel.findById(id).exec();
+    if (!game) throw new NotFoundException('Game not found');
+    if (requestingUserRole !== UserRole.Admin && game.userId?.toString() !== requestingUserId) {
+      throw new ForbiddenException('Access denied');
+    }
+    await game.deleteOne();
+    await this.questionModel.deleteMany({ gameId: new Types.ObjectId(id) }).exec();
+  }
+
+  async removeByUserId(userId: string): Promise<void> {
+    const games = await this.gameModel.find({ userId: new Types.ObjectId(userId) }).select('_id').exec();
+    const gameIds = games.map(g => g._id);
+    if (gameIds.length === 0) return;
+    await this.questionModel.deleteMany({ gameId: { $in: gameIds } }).exec();
+    await this.gameModel.deleteMany({ _id: { $in: gameIds } }).exec();
   }
 }

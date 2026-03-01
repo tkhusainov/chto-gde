@@ -22,6 +22,34 @@ const QUESTION_TYPE_LABELS: Record<string, string> = {
   blitz: 'Блиц',
 };
 
+type BlitzSubForm = {
+  type: QuestionType;
+  description: string;
+  image: string;
+  video: string;
+  answerType: AnswerType;
+  answerDescription: string;
+  answerImage: string;
+  answerVideo: string;
+};
+
+const EMPTY_BLITZ_SUB: BlitzSubForm = {
+  type: QuestionType.Text,
+  description: '',
+  image: '',
+  video: '',
+  answerType: AnswerType.Text,
+  answerDescription: '',
+  answerImage: '',
+  answerVideo: '',
+};
+
+const EMPTY_BLITZ_SUBS: [BlitzSubForm, BlitzSubForm, BlitzSubForm] = [
+  { ...EMPTY_BLITZ_SUB },
+  { ...EMPTY_BLITZ_SUB },
+  { ...EMPTY_BLITZ_SUB },
+];
+
 type FormState = {
   type: QuestionType;
   header: string;
@@ -34,6 +62,7 @@ type FormState = {
   answerDescription: string;
   authorName: string;
   authorPhoto: string;
+  subQuestions: [BlitzSubForm, BlitzSubForm, BlitzSubForm];
 };
 
 export function QuestionEditPage() {
@@ -54,6 +83,7 @@ export function QuestionEditPage() {
     answerDescription: '',
     authorName: '',
     authorPhoto: '',
+    subQuestions: EMPTY_BLITZ_SUBS,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -84,6 +114,17 @@ export function QuestionEditPage() {
         if (idx === -1) { setError('Вопрос не найден'); return; }
         const q = questions[idx];
         setRowNumber(idx + 1);
+        const loadedSubs = q.subQuestions ?? [];
+        const subQuestions: [BlitzSubForm, BlitzSubForm, BlitzSubForm] = [0, 1, 2].map(i => ({
+          type: (loadedSubs[i]?.type as QuestionType) ?? QuestionType.Text,
+          description: loadedSubs[i]?.description ?? '',
+          image: loadedSubs[i]?.image ?? '',
+          video: loadedSubs[i]?.video ?? '',
+          answerType: loadedSubs[i]?.answer?.type ?? AnswerType.Text,
+          answerDescription: loadedSubs[i]?.answer?.description ?? '',
+          answerImage: loadedSubs[i]?.answer?.image ?? '',
+          answerVideo: loadedSubs[i]?.answer?.video ?? '',
+        })) as [BlitzSubForm, BlitzSubForm, BlitzSubForm];
         setForm({
           type: q.type,
           header: q.header ?? '',
@@ -96,6 +137,7 @@ export function QuestionEditPage() {
           answerDescription: q.answer?.description ?? '',
           authorName: q.author?.name ?? '',
           authorPhoto: q.author?.photo ?? '',
+          subQuestions,
         });
       })
       .catch(e => setError(e.message))
@@ -106,6 +148,13 @@ export function QuestionEditPage() {
     setForm(prev => ({ ...prev, [key]: value }));
   }
 
+  function setSubQuestion(index: number, field: keyof BlitzSubForm, value: string) {
+    setForm(prev => {
+      const subs = prev.subQuestions.map((s, i) => i === index ? { ...s, [field]: value } : s) as [BlitzSubForm, BlitzSubForm, BlitzSubForm];
+      return { ...prev, subQuestions: subs };
+    });
+  }
+
   async function handleSave() {
     if (!questionId) return;
     setSaving(true);
@@ -113,14 +162,26 @@ export function QuestionEditPage() {
       const author = form.authorName
         ? { name: form.authorName, photo: form.authorPhoto || undefined }
         : undefined;
+      const isBlitz = form.type === QuestionType.Blitz;
       await apiUpdateQuestion(token, questionId, {
         type: form.type,
         header: form.header || undefined,
         description: form.description || undefined,
-        image: form.image || undefined,
-        video: form.video || undefined,
-        answer: form.answerDescription || form.answerImage || form.answerVideo
+        image: !isBlitz && form.image ? form.image : undefined,
+        video: !isBlitz && form.video ? form.video : undefined,
+        answer: !isBlitz && (form.answerDescription || form.answerImage || form.answerVideo)
           ? { type: form.answerType, description: form.answerDescription || undefined, image: form.answerImage || undefined, video: form.answerVideo || undefined }
+          : undefined,
+        subQuestions: isBlitz
+          ? form.subQuestions.map(sq => ({
+              type: sq.type,
+              description: sq.description || undefined,
+              image: sq.type === QuestionType.Image && sq.image ? sq.image : undefined,
+              video: sq.type === QuestionType.Video && sq.video ? sq.video : undefined,
+              answer: sq.answerDescription || sq.answerImage || sq.answerVideo
+                ? { type: sq.answerType, description: sq.answerDescription || undefined, image: sq.answerImage || undefined, video: sq.answerVideo || undefined }
+                : undefined,
+            }))
           : undefined,
         author,
       });
@@ -256,74 +317,208 @@ export function QuestionEditPage() {
               </div>
             )}
           </div>}
-          <div className="auth-field question-form-full">
-            <label>Вопрос</label>
-            <textarea className="users-input question-textarea" value={form.description} onChange={e => setField('description', e.target.value)} rows={4} />
-          </div>
-          <div className="auth-field">
-            <label>Тип ответа</label>
-            <select className="users-select" value={form.answerType} onChange={e => setField('answerType', e.target.value as AnswerType)}>
-              {Object.values(AnswerType).map(t => (
-                <option key={t} value={t}>{ANSWER_TYPE_LABELS[t]}</option>
+          {form.type !== QuestionType.Blitz && (
+            <div className="auth-field question-form-full">
+              <label>Вопрос</label>
+              <textarea className="users-input question-textarea" value={form.description} onChange={e => setField('description', e.target.value)} rows={6} />
+            </div>
+          )}
+
+          {form.type === QuestionType.Blitz && (
+            <div className="question-form-full">
+              {form.subQuestions.map((sub, i) => (
+                <div key={i} className="question-form-panel" style={{ marginBottom: 12 }}>
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
+                    <div className="auth-field" style={{ flex: 1 }}>
+                      <label>Тип подвопроса {i + 1}</label>
+                      <select className="users-select" value={sub.type} onChange={e => setSubQuestion(i, 'type', e.target.value)}>
+                        <option value={QuestionType.Text}>Текст</option>
+                        <option value={QuestionType.Image}>Изображение</option>
+                        <option value={QuestionType.Video}>Видео</option>
+                      </select>
+                    </div>
+                    <div className="auth-field" style={{ flex: 1 }}>
+                      <label>Тип ответа {i + 1}</label>
+                      <select className="users-select" value={sub.answerType} onChange={e => setSubQuestion(i, 'answerType', e.target.value)}>
+                        {Object.values(AnswerType).map(t => (
+                          <option key={t} value={t}>{ANSWER_TYPE_LABELS[t]}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="auth-field">
+                    <label>Подвопрос {i + 1}</label>
+                    <textarea
+                      className="users-input question-textarea"
+                      value={sub.description}
+                      onChange={e => setSubQuestion(i, 'description', e.target.value)}
+                      rows={6}
+                      placeholder="Текст вопроса"
+                    />
+                  </div>
+
+                  {sub.type === QuestionType.Image && (
+                    <div className="auth-field" style={{ marginTop: 8 }}>
+                      <label>Фото подвопроса {i + 1}</label>
+                      <input type="file" accept="image/*" className="users-input" onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > IMAGE_MAX_BYTES) { setError('Фото не должно превышать 5 МБ'); e.target.value = ''; return; }
+                        const reader = new FileReader();
+                        reader.onload = () => setSubQuestion(i, 'image', reader.result as string);
+                        reader.readAsDataURL(file);
+                      }} />
+                      {sub.image && (
+                        <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                          <img src={sub.image} alt="" style={{ maxWidth: '100%', maxHeight: 160, objectFit: 'contain', borderRadius: 4 }} />
+                          <button type="button" className="users-btn users-btn-cancel" onClick={() => setSubQuestion(i, 'image', '')}>Удалить</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {sub.type === QuestionType.Video && (
+                    <div className="auth-field" style={{ marginTop: 8 }}>
+                      <label>Видео подвопроса {i + 1}</label>
+                      <input type="file" accept="video/*" className="users-input" onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > VIDEO_MAX_BYTES) { setError('Видео не должно превышать 7 МБ'); e.target.value = ''; return; }
+                        const reader = new FileReader();
+                        reader.onload = () => setSubQuestion(i, 'video', reader.result as string);
+                        reader.readAsDataURL(file);
+                      }} />
+                      {sub.video && (
+                        <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                          <video src={sub.video} controls style={{ maxWidth: '100%', maxHeight: 160, borderRadius: 4 }} />
+                          <button type="button" className="users-btn users-btn-cancel" onClick={() => setSubQuestion(i, 'video', '')}>Удалить</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="auth-field" style={{ marginTop: 8 }}>
+                    <label>Ответ {i + 1}</label>
+                    <textarea
+                      className="users-input question-textarea"
+                      value={sub.answerDescription}
+                      onChange={e => setSubQuestion(i, 'answerDescription', e.target.value)}
+                      rows={3}
+                      placeholder="Текст ответа"
+                    />
+                  </div>
+
+                  {sub.answerType === AnswerType.Image && (
+                    <div className="auth-field" style={{ marginTop: 8 }}>
+                      <label>Фото ответа {i + 1}</label>
+                      <input type="file" accept="image/*" className="users-input" onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > IMAGE_MAX_BYTES) { setError('Фото ответа не должно превышать 5 МБ'); e.target.value = ''; return; }
+                        const reader = new FileReader();
+                        reader.onload = () => setSubQuestion(i, 'answerImage', reader.result as string);
+                        reader.readAsDataURL(file);
+                      }} />
+                      {sub.answerImage && (
+                        <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                          <img src={sub.answerImage} alt="" style={{ maxWidth: '100%', maxHeight: 160, objectFit: 'contain', borderRadius: 4 }} />
+                          <button type="button" className="users-btn users-btn-cancel" onClick={() => setSubQuestion(i, 'answerImage', '')}>Удалить</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {sub.answerType === AnswerType.Video && (
+                    <div className="auth-field" style={{ marginTop: 8 }}>
+                      <label>Видео ответа {i + 1}</label>
+                      <input type="file" accept="video/*" className="users-input" onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > VIDEO_MAX_BYTES) { setError('Видео ответа не должно превышать 7 МБ'); e.target.value = ''; return; }
+                        const reader = new FileReader();
+                        reader.onload = () => setSubQuestion(i, 'answerVideo', reader.result as string);
+                        reader.readAsDataURL(file);
+                      }} />
+                      {sub.answerVideo && (
+                        <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                          <video src={sub.answerVideo} controls style={{ maxWidth: '100%', maxHeight: 160, borderRadius: 4 }} />
+                          <button type="button" className="users-btn users-btn-cancel" onClick={() => setSubQuestion(i, 'answerVideo', '')}>Удалить</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               ))}
-            </select>
-          </div>
-          <div className="auth-field question-form-full">
-            <label>Ответ</label>
-            <textarea className="users-input question-textarea" value={form.answerDescription} onChange={e => setField('answerDescription', e.target.value)} rows={2} />
-          </div>
-          {form.answerType === AnswerType.Image && (
-            <div className="auth-field question-form-full">
-              <label>Фото ответа</label>
-              <input
-                type="file"
-                accept="image/*"
-                className="users-input"
-                onChange={e => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  if (file.size > IMAGE_MAX_BYTES) { setError('Фото ответа не должно превышать 5 МБ'); e.target.value = ''; return; }
-                  const reader = new FileReader();
-                  reader.onload = () => setField('answerImage', reader.result as string);
-                  reader.readAsDataURL(file);
-                }}
-              />
-              {form.answerImage && (
-                <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                  <img src={form.answerImage} alt="Фото ответа" style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain', borderRadius: 4 }} />
-                  <button type="button" className="users-btn users-btn-cancel" onClick={() => setField('answerImage', '')}>
-                    Удалить
-                  </button>
-                </div>
-              )}
             </div>
           )}
-          {form.answerType === AnswerType.Video && (
-            <div className="auth-field question-form-full">
-              <label>Видео ответа</label>
-              <input
-                type="file"
-                accept="video/*"
-                className="users-input"
-                onChange={e => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  if (file.size > VIDEO_MAX_BYTES) { setError('Видео ответа не должно превышать 7 МБ'); e.target.value = ''; return; }
-                  const reader = new FileReader();
-                  reader.onload = () => setField('answerVideo', reader.result as string);
-                  reader.readAsDataURL(file);
-                }}
-              />
-              {form.answerVideo && (
-                <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                  <video src={form.answerVideo} controls style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 4 }} />
-                  <button type="button" className="users-btn users-btn-cancel" onClick={() => setField('answerVideo', '')}>
-                    Удалить
-                  </button>
-                </div>
-              )}
+
+          {form.type !== QuestionType.Blitz && <>
+            <div className="auth-field">
+              <label>Тип ответа</label>
+              <select className="users-select" value={form.answerType} onChange={e => setField('answerType', e.target.value as AnswerType)}>
+                {Object.values(AnswerType).map(t => (
+                  <option key={t} value={t}>{ANSWER_TYPE_LABELS[t]}</option>
+                ))}
+              </select>
             </div>
-          )}
+            <div className="auth-field question-form-full">
+              <label>Ответ</label>
+              <textarea className="users-input question-textarea" value={form.answerDescription} onChange={e => setField('answerDescription', e.target.value)} rows={3} />
+            </div>
+            {form.answerType === AnswerType.Image && (
+              <div className="auth-field question-form-full">
+                <label>Фото ответа</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="users-input"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (file.size > IMAGE_MAX_BYTES) { setError('Фото ответа не должно превышать 5 МБ'); e.target.value = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = () => setField('answerImage', reader.result as string);
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                {form.answerImage && (
+                  <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <img src={form.answerImage} alt="Фото ответа" style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain', borderRadius: 4 }} />
+                    <button type="button" className="users-btn users-btn-cancel" onClick={() => setField('answerImage', '')}>
+                      Удалить
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+            {form.answerType === AnswerType.Video && (
+              <div className="auth-field question-form-full">
+                <label>Видео ответа</label>
+                <input
+                  type="file"
+                  accept="video/*"
+                  className="users-input"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (file.size > VIDEO_MAX_BYTES) { setError('Видео ответа не должно превышать 7 МБ'); e.target.value = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = () => setField('answerVideo', reader.result as string);
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                {form.answerVideo && (
+                  <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <video src={form.answerVideo} controls style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 4 }} />
+                    <button type="button" className="users-btn users-btn-cancel" onClick={() => setField('answerVideo', '')}>
+                      Удалить
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </>}
         </div>
         <div className="users-actions question-form-actions">
           <button className="users-btn users-btn-save" onClick={handleSave} disabled={saving}>

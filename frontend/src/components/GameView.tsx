@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { loadSession } from '../api/auth';
+import { apiGetGame } from '../api/games';
 import { apiGetQuestions } from '../api/questions';
 import { Question } from '../types';
 import { Game } from './Game';
@@ -10,6 +11,7 @@ export function GameView() {
   const navigate = useNavigate();
   const token = loadSession()?.token ?? '';
 
+  const [gameName, setGameName] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,8 +23,11 @@ export function GameView() {
 
   useEffect(() => {
     if (!id) return;
-    apiGetQuestions(token, id)
-      .then(setQuestions)
+    Promise.all([apiGetGame(token, id), apiGetQuestions(token, id)])
+      .then(([game, qs]) => {
+        setGameName(game.name);
+        setQuestions(qs);
+      })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [id, token]);
@@ -46,6 +51,7 @@ export function GameView() {
       {startBannerOpen &&
         <div className='banner start-banner flex-center'>
           <div>
+            {gameName && <h2>{gameName}</h2>}
             <audio controls>
               <source src="/meeting.mp3" type="audio/mp3"></source>
             </audio>

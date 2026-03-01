@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loadSession } from '../api/auth';
-import { GameItem } from '../types';
+import { GameItem, UserItem } from '../types';
 import { apiGetGames, apiCreateGame, apiUpdateGame, apiDeleteGame } from '../api/games';
+import { apiGetUsers } from '../api/users';
+import { UserRole } from '../enums';
 
 export function GamesPage() {
   const navigate = useNavigate();
   const [games, setGames] = useState<GameItem[]>([]);
+  const [usersMap, setUsersMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -16,11 +19,16 @@ export function GamesPage() {
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
 
-  const token = loadSession()?.token ?? '';
+  const session = loadSession();
+  const token = session?.token ?? '';
+  const currentUser = session?.user;
 
   useEffect(() => {
-    apiGetGames(token)
-      .then(setGames)
+    Promise.all([apiGetGames(token), apiGetUsers(token)])
+      .then(([gamesData, usersData]) => {
+        setGames(gamesData);
+        setUsersMap(Object.fromEntries(usersData.map((u: UserItem) => [u.id, u.name])));
+      })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [token]);
@@ -104,13 +112,16 @@ export function GamesPage() {
           <thead>
             <tr>
               <th>Название</th>
+              <th>Владелец</th>
               <th>Code</th>
               <th>Pin</th>
               <th>Действия</th>
             </tr>
           </thead>
           <tbody>
-            {games.map(game => (
+            {games.map(game => {
+              const canEdit = currentUser?.role === UserRole.Admin || game.userId === currentUser?.id;
+              return (
               <tr key={game.id}>
                 {editingId === game.id ? (
                   <>
@@ -121,6 +132,7 @@ export function GamesPage() {
                         onChange={e => setEditName(e.target.value)}
                       />
                     </td>
+                    <td>{game.userId ? usersMap[game.userId] ?? '—' : '—'}</td>
                     <td>{game.code}</td>
                     <td>{game.pin}</td>
                     <td className="users-actions">
@@ -139,6 +151,7 @@ export function GamesPage() {
                 ) : (
                   <>
                     <td>{game.name}</td>
+                    <td>{game.userId ? usersMap[game.userId] ?? '—' : '—'}</td>
                     <td>{game.code}</td>
                     <td>{game.pin}</td>
                     <td className="users-actions">
@@ -148,33 +161,38 @@ export function GamesPage() {
                       >
                         Запустить
                       </button>
-                      <button
-                        className="users-btn users-btn-edit"
-                        onClick={() => navigate(`/games/${game.id}/questions`)}
-                      >
-                        Вопросы
-                      </button>
-                      <button
-                        className="users-btn users-btn-edit"
-                        onClick={() => startEdit(game)}
-                      >
-                        Изменить
-                      </button>
-                      <button
-                        className="users-btn users-btn-delete"
-                        onClick={() => deleteGame(game.id)}
-                        disabled={deletingId === game.id}
-                      >
-                        Удалить
-                      </button>
+                      {canEdit && (
+                        <>
+                          <button
+                            className="users-btn users-btn-edit"
+                            onClick={() => navigate(`/games/${game.id}/questions`)}
+                          >
+                            Вопросы
+                          </button>
+                          <button
+                            className="users-btn users-btn-edit"
+                            onClick={() => startEdit(game)}
+                          >
+                            Изменить
+                          </button>
+                          <button
+                            className="users-btn users-btn-delete"
+                            onClick={() => deleteGame(game.id)}
+                            disabled={deletingId === game.id}
+                          >
+                            Удалить
+                          </button>
+                        </>
+                      )}
                     </td>
                   </>
                 )}
               </tr>
-            ))}
+              );
+            })}
             {games.length === 0 && (
               <tr>
-                <td colSpan={4} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
+                <td colSpan={5} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
                   Игры не найдены
                 </td>
               </tr>

@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Game, GameDocument } from '../games';
 import { Question, QuestionDocument } from '../questions';
+import { User, UserDocument } from '../users/schemas/user.schema';
+import { ADMIN_EMAIL } from '../config/constants';
 import { games as gamesData } from './data/games.seed';
 import { questions as questions0 } from './data/questions-0.seed';
 import { questions as questions1 } from './data/questions-1.seed';
@@ -15,6 +17,7 @@ export class SeedService implements OnModuleInit {
   constructor(
     @InjectModel(Game.name) private gameModel: Model<GameDocument>,
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async onModuleInit() {
@@ -30,7 +33,18 @@ export class SeedService implements OnModuleInit {
 
     this.logger.log('Seeding database...');
 
-    const createdGames = await this.gameModel.insertMany(gamesData);
+    const admin = await this.userModel.findOne({ email: ADMIN_EMAIL }).exec();
+    const userId = admin?._id;
+
+    const rand4 = () => String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    const createdGames = await this.gameModel.insertMany(
+      gamesData.map((g) => ({
+        ...g,
+        code: rand4(),
+        pin: rand4(),
+        ...(userId ? { userId } : {}),
+      })),
+    );
     const [game0, game1, game2] = createdGames;
     this.logger.log(`Created ${createdGames.length} games`);
 

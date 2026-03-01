@@ -1,5 +1,5 @@
 export const games = [
-  { name: 'Игра 1' },
-  { name: 'Игра 2' },
-  { name: 'New year 2026' },
+  { name: 'НГ 2024 ВАУ' },
+  { name: 'НГ 2025' },
+  { name: 'Новый год 2026' },
 ];

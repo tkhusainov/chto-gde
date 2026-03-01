@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { Question } from "../types";
+import { SubQuestion } from "../types";
 import Sound from 'react-sound';
 import { Answer } from "./Answer";
 
 type Props = {
-    question: Question;
+    question: SubQuestion;
     index: number;
     maxIndex: number;
     onAnswer?: (success: boolean) => void;
@@ -15,25 +15,30 @@ export const BlitzSubView: React.FC<Props> = ({question, index, maxIndex, onAnsw
     const [answerVisible, setAnswerVisible] = useState(false);
     const [currentTimer, setCurrentTimer] = useState(MAX_TIMER);
     const [myInterval, setMyInterval] = useState<NodeJS.Timer>();
+    const [isRunning, setIsRunning] = useState(false);
     const [sigStatus, setSigStatus] = useState<"STOPPED" | "PLAYING" | "PAUSED">("STOPPED");
 
     const stopTimer = useCallback(() => {
         clearInterval(myInterval);
+        setIsRunning(false);
     }, [myInterval]);
 
     const startTimer = useCallback(() => {
+        if (isRunning) return;
         stopTimer();
 
         const _interval = setInterval(() => {
             setCurrentTimer((prev) => --prev);
         }, 1000);
         setMyInterval(_interval);
+        setIsRunning(true);
         setSigStatus("PLAYING");
-    }, [stopTimer]);
+    }, [isRunning, stopTimer]);
 
     useEffect(() => {
         if (currentTimer <= 0) {
             clearInterval(myInterval);
+            setIsRunning(false);
             setSigStatus("PLAYING");
         }
     }, [myInterval, currentTimer]);
@@ -46,8 +51,8 @@ export const BlitzSubView: React.FC<Props> = ({question, index, maxIndex, onAnsw
                 <h1>{question.header}</h1>
                 <p>{question.description}</p>
 
-                <div className="flex-center">
-                    {`${currentTimer} секунд`}
+                <div className={`flex-center timer-display ${isRunning ? (currentTimer <= 10 ? 'timer-urgent' : 'timer-running') : currentTimer <= 0 ? 'timer-expired' : 'timer-stopped'}`}>
+                    {`${currentTimer} сек`}
                 </div>
             </div>
 
@@ -58,8 +63,8 @@ export const BlitzSubView: React.FC<Props> = ({question, index, maxIndex, onAnsw
             />
 
             <div>
-                <button className="answer-btn" onClick={startTimer}>{'Запустить таймер'}</button>
-                <button className="answer-btn" onClick={stopTimer}>{'Остановить таймер'}</button>
+                <button className="answer-btn" onClick={startTimer} disabled={isRunning}>{'Запустить таймер'}</button>
+                <button className="answer-btn" onClick={stopTimer} disabled={!isRunning}>{'Остановить таймер'}</button>
                 <button className="answer-btn" onClick={() => setAnswerVisible(true)}>{'Показать ответ'}</button>
             </div>
 

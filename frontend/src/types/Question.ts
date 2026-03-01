@@ -7,9 +7,17 @@ export type QuestionAnswer = {
   video?: string;
 };
 
+export type SubQuestion = {
+  type?: string;
+  description?: string;
+  header?: string;
+  image?: string;
+  video?: string;
+  answer?: QuestionAnswer;
+};
+
 export type Question = {
   id: string;
-  number: string;
   type: QuestionType;
   image?: string;
   video?: string;
@@ -20,5 +28,5 @@ export type Question = {
     name: string;
     photo: string;
   };
-  subQuestions?: Question[];
+  subQuestions?: SubQuestion[];
 };
