@@ -53,6 +53,10 @@ export async function apiJoinGame(code: string, pin: string): Promise<{ id: stri
   return data;
 }
 
+export async function apiFinishGame(id: string): Promise<void> {
+  await fetch(`${BASE_URL}/games/${id}/finish`, { method: 'POST' });
+}
+
 export async function apiDeleteGame(token: string, id: string): Promise<void> {
   const res = await fetch(`${BASE_URL}/games/${id}`, {
     method: 'DELETE',

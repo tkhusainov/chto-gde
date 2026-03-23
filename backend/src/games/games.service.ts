@@ -76,6 +76,13 @@ export class GamesService {
     await this.questionModel.deleteMany({ gameId: new Types.ObjectId(id) }).exec();
   }
 
+  async finish(id: string): Promise<void> {
+    await this.gameModel.findByIdAndUpdate(id, {
+      $inc: { playCount: 1 },
+      lastPlayedAt: new Date(),
+    }).exec();
+  }
+
   async removeByUserId(userId: string): Promise<void> {
     const games = await this.gameModel.find({ userId: new Types.ObjectId(userId) }).select('_id').exec();
     const gameIds = games.map(g => g._id);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 
@@ -21,6 +21,16 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const isGameActive = /^\/games\/[^/]+$/.test(location.pathname);
+
+  const isPlayRoute = location.pathname === '/play' || location.pathname.startsWith('/play/');
+
+  useEffect(() => {
+    if (isPlayRoute) {
+      (window as any).startDecorations?.();
+    } else {
+      (window as any).stopDecorations?.();
+    }
+  }, [isPlayRoute]);
 
   function handleLogin(loggedUser: AuthUser) {
     setUser(loggedUser);

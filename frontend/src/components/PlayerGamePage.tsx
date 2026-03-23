@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiJoinGame } from '../api/games';
+import { apiJoinGame, apiFinishGame } from '../api/games';
 import { apiGetPlayerQuestions } from '../api/questions';
 import { Question } from '../types';
 import { Game } from './Game';
+import { useKeepAlive } from '../hooks';
 
 export function PlayerGamePage() {
   const { code, pin } = useParams<{ code: string; pin: string }>();
+  useKeepAlive();
 
+  const [gameId, setGameId] = useState<string | null>(null);
   const [gameName, setGameName] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,10 +21,15 @@ export function PlayerGamePage() {
   const [loseBannerOpen, setLoseBannerOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
+  function handleGameEnd() {
+    if (gameId) apiFinishGame(gameId);
+  }
+
   useEffect(() => {
     if (!code || !pin) return;
     apiJoinGame(code, pin)
       .then(game => {
+        setGameId(game.id);
         setGameName(game.name);
         return apiGetPlayerQuestions(game.id, pin);
       })
@@ -103,9 +111,9 @@ export function PlayerGamePage() {
       {!!questions.length &&
         <Game
           questions={questions}
-          onWin={() => setWinBannerOpen(true)}
+          onWin={() => { handleGameEnd(); setWinBannerOpen(true); }}
           onPause={() => setIsPaused(true)}
-          onLose={() => setLoseBannerOpen(true)}
+          onLose={() => { handleGameEnd(); setLoseBannerOpen(true); }}
         />}
     </header>
   );

@@ -115,6 +115,8 @@ export function GamesPage() {
               <th>Владелец</th>
               <th>Code</th>
               <th>Pin</th>
+              <th>Сыграно</th>
+              <th>Последняя игра</th>
               <th>Действия</th>
             </tr>
           </thead>
@@ -135,6 +137,8 @@ export function GamesPage() {
                     <td>{game.userId ? usersMap[game.userId] ?? '—' : '—'}</td>
                     <td>{game.code}</td>
                     <td>{game.pin}</td>
+                    <td>{game.playCount ?? 0}</td>
+                    <td>{game.lastPlayedAt ? new Date(game.lastPlayedAt).toLocaleDateString('ru-RU') : '—'}</td>
                     <td className="users-actions">
                       <button
                         className="users-btn users-btn-save"
@@ -154,6 +158,8 @@ export function GamesPage() {
                     <td>{game.userId ? usersMap[game.userId] ?? '—' : '—'}</td>
                     <td>{game.code}</td>
                     <td>{game.pin}</td>
+                    <td>{game.playCount ?? 0}</td>
+                    <td>{game.lastPlayedAt ? new Date(game.lastPlayedAt).toLocaleDateString('ru-RU') : '—'}</td>
                     <td className="users-actions">
                       <button
                         className="users-btn users-btn-launch"
@@ -192,7 +198,7 @@ export function GamesPage() {
             })}
             {games.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
                   Игры не найдены
                 </td>
               </tr>

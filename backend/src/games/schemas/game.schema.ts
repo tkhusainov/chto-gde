@@ -27,6 +27,12 @@ export class Game {
 
   @Prop({ required: true, length: 4 })
   pin: string;
+
+  @Prop({ default: 0 })
+  playCount: number;
+
+  @Prop()
+  lastPlayedAt?: Date;
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game);

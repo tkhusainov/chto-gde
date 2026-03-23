@@ -4,4 +4,6 @@ export interface GameItem {
   code: string;
   pin: string;
   userId?: string;
+  playCount?: number;
+  lastPlayedAt?: string;
 }

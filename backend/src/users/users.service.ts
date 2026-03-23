@@ -18,7 +18,7 @@ export class UsersService implements OnModuleInit {
     const exists = await this.userModel.exists({ email: ADMIN_EMAIL }).exec();
     if (!exists) {
       await this.create(ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD, UserRole.Admin);
-      this.logger.log(`Admin user created: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
+      this.logger.log(`Admin user created: ${ADMIN_EMAIL}${process.env.ADMIN_PASSWORD ? '' : ` / ${ADMIN_PASSWORD} (сгенерирован)`}`);
     }
   }
 

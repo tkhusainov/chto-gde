@@ -11,6 +11,11 @@ export class GamesController {
     return this.gamesService.join(code, pin);
   }
 
+  @Post(':id/finish')
+  finish(@Param('id') id: string) {
+    return this.gamesService.finish(id);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll() {
