@@ -6,8 +6,10 @@ import { UsersModule } from './users';
 import { AuthModule } from './auth';
 import { QuestionsModule } from './questions';
 import { GamesModule } from './games';
+import { HealthController } from './health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
